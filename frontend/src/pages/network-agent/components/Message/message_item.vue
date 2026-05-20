@@ -104,7 +104,16 @@ function handleThinkTags(text: string) {
 // 计算属性，用于渲染markdown内容
 const renderedContent = computed(() => {
   if (!props.message.content) return ''
-  let content = handleThinkTags(props.message.content as string)
+  const rawContent = props.message.content
+  const flatContent: string = Array.isArray(rawContent)
+    ? (rawContent as any[]).map((p: any) => {
+        if (p.type === 'text') return p.text
+        if (p.type === 'file') return `📎 [${p.file?.name}](${p.file?.url})`
+        if (p.type === 'image_url') return `![image](${p.image_url?.url})`
+        return ''
+      }).join('\n')
+    : String(rawContent)
+  let content = handleThinkTags(flatContent)
   // 对数学公式进行处理，自动添加 $$ 符号
   const escapedText = escapeBrackets(escapeDollarNumber(content))
   const html = md.render(escapedText)

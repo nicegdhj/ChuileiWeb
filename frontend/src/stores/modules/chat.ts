@@ -746,13 +746,40 @@ export const useChatStore = defineStore('chat', () => {
         Object.assign(chatRequest, extraParams)
       }
 
+      // Pre-upload files to /files, collect file metadata
+      const baseApi = import.meta.env.VITE_APP_BASE_API as string
+      const fileMetaList: { file_id: string; name: string; url: string; mime: string; size: number }[] = []
+      if (files && files.length > 0) {
+        for (const f of files) {
+          const fd = new FormData()
+          fd.append('file', f)
+          const r = await fetch(`${baseApi}/files?sessionId=${encodeURIComponent(sessionStore.currentSessionId)}`, {
+            method: 'POST',
+            headers: { 'X-Client-Id': getClientId() },
+            body: fd
+          })
+          const j = await r.json()
+          if (j.code === '00000') fileMetaList.push(j.data)
+        }
+      }
+
+      // Build multimodal content for last user message if files were uploaded
+      if (fileMetaList.length > 0) {
+        const lastUser = [...messages].reverse().find((m: any) => m.role === 'user')
+        if (lastUser) {
+          const parts: any[] = [{ type: 'text', text: typeof lastUser.content === 'string' ? lastUser.content : String(lastUser.content) }]
+          fileMetaList.forEach(fm => parts.push({ type: 'file', file: { file_id: fm.file_id, name: fm.name, url: fm.url } }))
+          lastUser.content = parts as any
+        }
+      }
+
+      // Add file_ids to chatRequest
+      if (fileMetaList.length > 0) {
+        chatRequest.file_ids = fileMetaList.map(f => f.file_id)
+      }
+
       // 统一使用 FormData 格式
       const formData = new FormData()
-      if (files && files.length > 0) {
-        files.forEach((file: any) => {
-          formData.append('file', file)
-        })
-      }
       const jsonBlob = new Blob([JSON.stringify(chatRequest)], {
         type: 'application/json'
       })
