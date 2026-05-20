@@ -1,0 +1,42 @@
+// 颜色变量
+$color-primary: #3b82f6;
+$color-white: #ffffff;
+$color-bg-light: #f8fafc;
+$color-text-dark: #1e293b; // rgb(30,41,59) 转换为十六进制
+$color-text-gray: #64748b;
+$color-text-gray-light: #94a3b8;
+$color-gray-100: #f1f5f9;
+$color-gray-200: #e2e8f0;
+$color-gray-300: #cbd5e1;
+$color-gray-400: #94a3b8;
+$color-gray-500: #64748b;
+$color-gray-600: #475569;
+$color-gray-700: #334155;
+$color-gray-800: #1e293b;
+$color-red: #ef4444;
+$color-blue-100: #dbeafe;
+$color-blue-300: #93c5fd; // 新增
+$color-blue-600: #3b82f6;
+// Slate 颜色系列
+$color-slate-50: #f8fafc;
+$color-slate-100: #f1f5f9;
+$color-slate-200: #e2e8f0;
+$color-slate-300: #cbd5e1;
+$color-slate-400: #94a3b8;
+$color-slate-500: #64748b;
+$color-slate-600: #475569;
+$color-slate-700: #334155;
+$color-slate-800: #1e293b;
+
+// 尺寸变量
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 24rpx;
+$spacing-lg: 32rpx;
+$spacing-xl: 48rpx;
+$spacing-2xl: 64rpx;
+$radius-sm: 4rpx;
+$radius-md: 8rpx;
+$radius-lg: 12rpx;
+$radius-xl: 16rpx;
+$radius-full: 9999rpx;

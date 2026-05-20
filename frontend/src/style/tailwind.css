@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * uni-app H5 showToast：@dcloudio 的 .uni-toast 依赖行内/文本流 + text-align:center。
+ * Tailwind Preflight 把 svg 设为 display:block，块级子元素不会被 text-align 居中，图标会贴左。
+ * 用 flex 保证图标与文案整体居中。
+ */
+.uni-toast {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.uni-toast__content {
+  text-align: center;
+  width: 100%;
+}
+
+@layer components {
+  .flex-c {
+    @apply flex justify-center items-center;
+  }
+
+  .flex-ac {
+    @apply flex justify-around items-center;
+  }
+
+  .flex-bc {
+    @apply flex justify-between items-center;
+  }
+
+  .navbar-bg-hover {
+    @apply dark:text-white dark:hover:!bg-[#242424];
+  }
+}
