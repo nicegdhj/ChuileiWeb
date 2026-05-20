@@ -7,9 +7,10 @@ from fastapi.testclient import TestClient
 from src.main import create_app
 
 
-def test_chat_stream_basic(monkeypatch):
+def test_chat_stream_basic(monkeypatch, tmp_path):
     monkeypatch.setenv("LLM_BASE_URL", "http://fake-llm/v1")
     monkeypatch.setenv("LLM_MODEL", "qwen3-32b")
+    monkeypatch.setenv("DB_URL", f"sqlite:///{tmp_path}/basic.sqlite")
     from src.config import get_settings
     get_settings.cache_clear()
 
@@ -21,22 +22,67 @@ def test_chat_stream_basic(monkeypatch):
         r.post("http://fake-llm/v1/chat/completions").mock(
             return_value=httpx.Response(200, text=body)
         )
-        client = TestClient(create_app())
-        payload = {
-            "sessionId": "s1",
-            "messageId": "m1",
-            "messages": [{"role": "user", "content": "hi"}],
-            "think": False,
-            "stream": True,
-        }
-        with client.stream(
-            "POST",
-            "/api/v1/chat/stream",
-            files={"data": ("data.json", json.dumps(payload), "application/json")},
-            headers={"X-Client-Id": "test-client"},
-        ) as resp:
-            assert resp.status_code == 200
-            chunks = list(resp.iter_lines())
+        with TestClient(create_app()) as client:
+            payload = {
+                "sessionId": "s1",
+                "messageId": "m1",
+                "messages": [{"role": "user", "content": "hi"}],
+                "think": False,
+                "stream": True,
+            }
+            with client.stream(
+                "POST",
+                "/api/v1/chat/stream",
+                files={"data": ("data.json", json.dumps(payload), "application/json")},
+                headers={"X-Client-Id": "test-client"},
+            ) as resp:
+                assert resp.status_code == 200
+                chunks = list(resp.iter_lines())
     joined = "\n".join(chunks)
     assert "你好" in joined
     assert "finish_reason" in joined
+
+
+def test_chat_stream_persists_messages(monkeypatch, tmp_path):
+    db_url = f"sqlite:///{tmp_path}/t.sqlite"
+    monkeypatch.setenv("DB_URL", db_url)
+    monkeypatch.setenv("LLM_BASE_URL", "http://fake-llm/v1")
+    from src.config import get_settings
+    get_settings.cache_clear()
+
+    body = (
+        'data: {"choices":[{"delta":{"content":"hi"}}]}\n\n'
+        'data: [DONE]\n\n'
+    )
+    import httpx, respx, json
+    from fastapi.testclient import TestClient
+    from src.main import create_app
+    from src.database import build_engine, get_sessionmaker, Base
+    from src.sessions import models  # noqa: F401
+    from src.sessions.service import get_messages, upsert_session
+
+    with respx.mock() as r:
+        r.post("http://fake-llm/v1/chat/completions").mock(
+            return_value=httpx.Response(200, text=body)
+        )
+        with TestClient(create_app()) as client:
+            payload = {
+                "sessionId": "ss1",
+                "messageId": "mm1",
+                "messages": [{"role": "user", "content": "你好"}],
+                "think": False, "stream": True,
+            }
+            with client.stream(
+                "POST", "/api/v1/chat/stream",
+                files={"data": ("data.json", json.dumps(payload), "application/json")},
+                headers={"X-Client-Id": "cidX"},
+            ) as resp:
+                list(resp.iter_lines())
+
+    engine = build_engine(db_url)
+    SessionLocal = get_sessionmaker(engine)
+    with SessionLocal() as db:
+        rows = get_messages(db, "cidX", "ss1")
+    roles = [r.role for r in rows]
+    assert roles == ["user", "assistant"]
+    assert "hi" in rows[1].content_json
