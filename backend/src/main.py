@@ -12,6 +12,7 @@ async def lifespan(app: FastAPI):
     setup_logging(settings.log_level)
     from src.database import init_engine, Base, get_engine
     from src.sessions import models as _sm  # noqa: F401 — 注册模型
+    from src.files import models as _fm  # noqa: F401
     init_engine(settings.db_url)
     Base.metadata.create_all(get_engine())
     yield
