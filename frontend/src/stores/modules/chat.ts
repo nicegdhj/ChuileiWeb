@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useSessionStore } from './session'
 import { v4 as uuidv4 } from 'uuid'
 import { request } from '@/utils/http'
+import { getClientId } from '@/utils/client_id'
 // import { useMemberStore } from './member'
 import { data } from '@/static/subParams'
 import { htmlParams1 } from '@/static/htmlParams'
@@ -29,8 +30,7 @@ export const useChatStore = defineStore('chat', () => {
 
   const getSessionList = async () => {
     const { code, data, message } = await request<Response<session_list_type[]>>({
-      url: `/suban-h5-dx/lingxi/agent/chat/list`,
-      // url: `/lingxi/agent/chat/list`,
+      url: `/sessions`,
       method: 'GET'
     })
     if (code == '00000') {
@@ -123,8 +123,7 @@ export const useChatStore = defineStore('chat', () => {
         }[]
       >
     >({
-      url: `/suban-h5-dx/lingxi/agent/chat/${sessionId}`,
-      // url: `/lingxi/agent/chat/${sessionId}`,
+      url: `/sessions/${sessionId}/messages`,
       method: 'GET'
     })
     if (code == '00000') {
@@ -283,7 +282,7 @@ export const useChatStore = defineStore('chat', () => {
             }[]
           >
         >({
-          url: '/suban-h5-dx/lingxi/agent/scene/use',
+          url: '/scene/use',
           method: 'POST',
           header: {
             'Content-Type': 'application/json' // 设置请求头
@@ -761,14 +760,11 @@ export const useChatStore = defineStore('chat', () => {
 
       // 注意：不手动设置 Content-Type，浏览器会自动设置 boundary
       const response = await fetch(
-        `${import.meta.env.VITE_APP_BASE_API}/suban-h5-dx/lingxi/agent/v2/chat`,
-        // `${import.meta.env.VITE_APP_BASE_API}/lingxi/agent/v2/chat`,
+        `${import.meta.env.VITE_APP_BASE_API}/chat/stream`,
         {
           method: 'POST',
           headers: {
-            'source-client': 'miniapp',
-            // Authorization: `Bearer ${sessionStore.token}`
-            'Web-Authorization': 'WebBearer'
+            'X-Client-Id': getClientId()
           },
           body: formData
         }
@@ -780,8 +776,7 @@ export const useChatStore = defineStore('chat', () => {
       // 流式完成后，获取回答耗时
       try {
         const durRes = await request<Response<number>>({
-          // url: `/lingxi/agent/chat/duration/${currentMessageId.value}`,
-          url: `/suban-h5-dx/lingxi/agent/chat/duration/${currentMessageId.value}`,
+          url: `/chat/duration/${currentMessageId.value}`,
           method: 'GET'
         })
         if (durRes.code == '00000' && durRes.data != null) {
