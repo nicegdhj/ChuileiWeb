@@ -2,6 +2,11 @@
 
 私域内网部署的对话式 AI 应用，前端从 lingxi 迁移并精简为 H5；后端为 FastAPI 适配层，接入 OpenAI 兼容的私有大模型。
 
+## 前置条件
+
+- Docker >= 24.0
+- Docker Compose >= 2.0（通常随 Docker Desktop 一并安装）
+
 ## 一键启动
 
 ```bash

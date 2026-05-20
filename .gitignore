@@ -19,7 +19,8 @@ dist/
 
 # Env
 .env
-.env.local
+*.env
+!.env.example
 *.local
 
 # Runtime data
