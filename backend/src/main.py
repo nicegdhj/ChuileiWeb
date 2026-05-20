@@ -40,6 +40,9 @@ def create_app() -> FastAPI:
     app.include_router(chat_router)
     from src.sessions.router import router as sessions_router
     app.include_router(sessions_router)
+    from src.files.router import router as files_router, download_router
+    app.include_router(files_router)
+    app.include_router(download_router)
     return app
 
 
