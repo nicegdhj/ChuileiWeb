@@ -43,6 +43,8 @@ def create_app() -> FastAPI:
     from src.files.router import router as files_router, download_router
     app.include_router(files_router)
     app.include_router(download_router)
+    from src.compat.router import router as compat_router
+    app.include_router(compat_router)
     return app
 
 
