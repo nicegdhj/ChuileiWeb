@@ -12,6 +12,7 @@ from src.chat.schemas import ChatRequest
 from src.chat.service import flatten_for_upstream
 from src.config import Settings, get_settings
 from src.database import get_db
+from src.files import service as files_service
 from src.sessions import service as sess_service
 from src.shared.client_id import require_client_id
 from src.shared.sse import sse_text_chunk, sse_done, sse_error
@@ -63,7 +64,8 @@ async def chat_stream(
             content_str, "markdown",
         )
 
-    upstream_messages = flatten_for_upstream(req.messages)
+    file_texts = files_service.texts_for(db, req.file_ids)
+    upstream_messages = flatten_for_upstream(req.messages, file_texts=file_texts)
     client = LLMClient(
         base_url=settings.llm_base_url,
         model=settings.llm_model,
