@@ -37,6 +37,8 @@ def create_app() -> FastAPI:
     app.include_router(health)
     from src.chat.router import router as chat_router
     app.include_router(chat_router)
+    from src.sessions.router import router as sessions_router
+    app.include_router(sessions_router)
     return app
 
 
