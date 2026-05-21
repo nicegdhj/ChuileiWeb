@@ -93,6 +93,12 @@ function handleNewChat() {
   // console.log('新建对话')
 }
 
+async function handleDeleteConversation(item: Conversation) {
+  if (!item.sessionId) return
+  await chatStore.deleteSession(item.sessionId)
+  conversationList.value = chatStore.sessionList
+}
+
 function handleSelectConversation(item: Conversation) {
   console.log('🚀 ~ handleSelectConversation ~ item:', item.sessionId)
   console.log(
@@ -119,8 +125,8 @@ const panelClass = computed(() => ({
   <view :class="panelClass">
     <view class="left-header">
       <view class="logo">
-        <Agent class="logo-icon" />
-        <text class="logo-text">网络运维超级入口</text>
+        <img src="@/assets/img/cmobile-logo.png" class="logo-icon" />
+        <text class="logo-text">网络垂类大模型</text>
       </view>
     </view>
 
@@ -174,6 +180,11 @@ const panelClass = computed(() => ({
                 {{ dayjs(item.latestCreateTime).format('YYYY-MM-DD HH:mm') }}
               </p>
             </div>
+            <button
+              class="delete-session-btn"
+              @click.stop="handleDeleteConversation(item)"
+              title="删除对话"
+            >×</button>
           </div>
         </view>
       </view>
@@ -214,6 +225,7 @@ const panelClass = computed(() => ({
       .logo-icon {
         width: 80rpx;
         height: 80rpx;
+        object-fit: contain;
       }
 
       .logo-text {
@@ -315,6 +327,26 @@ const panelClass = computed(() => ({
         &:hover {
           border-color: #f1f5f9;
           background-color: rgb(248 250 252 / 1);
+        }
+
+        .delete-session-btn {
+          opacity: 0;
+          flex-shrink: 0;
+          width: 20px;
+          height: 20px;
+          line-height: 18px;
+          text-align: center;
+          border-radius: 50%;
+          font-size: 16px;
+          color: #94a3b8;
+          transition: all 0.15s ease;
+          &:hover {
+            background-color: #fee2e2;
+            color: #ef4444;
+          }
+        }
+        &:hover .delete-session-btn {
+          opacity: 1;
         }
 
         .checkbox {

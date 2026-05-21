@@ -425,7 +425,7 @@ const selectedFiles = ref<any[]>([])
 
 const MAX_FILE_COUNT = 5
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const ALLOWED_EXTENSIONS = ['.pcap', '.xdr', '.zip']
+const ALLOWED_EXTENSIONS = ['.txt', '.md', '.csv', '.log', '.pdf', '.docx', '.xlsx']
 
 /** 点击添加按钮，弹出选择菜单 */
 const handleAddClick = () => {
@@ -872,24 +872,10 @@ const sendAudioDataToServer = (audioData: ArrayBuffer) => {
       <!-- 移动端导航区域 -->
       <div class="mobile-nav">
         <div class="nav-scroll-container">
-          <button
-            class="nav-item text-xs transition-colors"
-            :class="agentDropdownOpen ? 'active' : ''"
-            @click="toggleAgentDropdown"
-          >
+          <div class="nav-item text-xs">
             <Scene class="item-icon" />
-            {{ modeOptions.find(m => m.modeId === selectedModeId)?.name || '选择模型' }}
-            <svg
-              class="item-icon dropdown-arrow"
-              :class="{ 'rotate-180': agentDropdownOpen }"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </button>
+            垂类大模型
+          </div>
           <button
             class="nav-item text-xs transition-colors"
             :class="chatStore.isDeepThink ? 'active' : ''"
@@ -1067,7 +1053,7 @@ const sendAudioDataToServer = (audioData: ArrayBuffer) => {
             :inputBorder="false"
             autoHeight
             :maxlength="500"
-            placeholder="给网络运维超级入口发送消息..."
+            placeholder="给网络垂类大模型发送消息..."
             class="w-full custom-textarea-height custom-scrollbar"
             @keydown="handleKeydown"
           />
@@ -1075,34 +1061,9 @@ const sendAudioDataToServer = (audioData: ArrayBuffer) => {
         <div class="input-controls">
           <div class="left-controls">
             <div class="agent-dropdown-wrap">
-              <button
-                class="action-button transition-colors"
-                :class="agentDropdownOpen ? 'active' : ''"
-                @click="toggleAgentDropdown"
-              >
+              <div class="action-button">
                 <Scene class="action-icon" />
-                {{ modeOptions.find(m => m.modeId === selectedModeId)?.name || '选择模型' }}
-                <svg
-                  class="action-icon dropdown-arrow"
-                  :class="{ 'rotate-180': agentDropdownOpen }"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-              <div v-if="agentDropdownOpen" class="agent-dropdown-menu">
-                <div
-                  v-for="mode in modeOptions"
-                  :key="mode.modeId"
-                  class="agent-dropdown-item"
-                  :class="{ selected: mode.modeId === selectedModeId }"
-                  @click="selectAgent(mode)"
-                >
-                  {{ mode.name }}
-                </div>
+                垂类大模型
               </div>
             </div>
             <button
@@ -1136,13 +1097,12 @@ const sendAudioDataToServer = (audioData: ArrayBuffer) => {
             </button> -->
           </div>
           <div class="right-controls">
-            <button class="icon-button" @mousedown="handleVoiceMouseDown">
-              <Voice class="icon" /></button
-            ><button class="icon-button" @click="chooseImage(['album'])">
-              <Picture class="icon" /></button
-            ><button class="icon-button" @click="chooseFile">
-              <Link class="icon" />
-            </button>
+            <div class="upload-tooltip-wrap">
+              <button class="icon-button" @click="chooseFile">
+                <Link class="icon" />
+              </button>
+              <span class="upload-tooltip">支持 PDF、Word、Excel、TXT、MD、CSV 格式</span>
+            </div>
             <div class="dividing-line"></div>
             <button
               class="send-icon"
@@ -1182,7 +1142,7 @@ const sendAudioDataToServer = (audioData: ArrayBuffer) => {
               :inputBorder="false"
               autoHeight
               :maxlength="500"
-              placeholder="给网络运维超级入口发送消息..."
+              placeholder="给网络垂类大模型发送消息..."
               class="w-[80%] custom-mobile-textarea-height no-scrollbar"
             />
             <view
@@ -1604,6 +1564,38 @@ const sendAudioDataToServer = (audioData: ArrayBuffer) => {
         display: flex;
         align-items: center;
         gap: 8rpx;
+        .upload-tooltip-wrap {
+          position: relative;
+          display: flex;
+          align-items: center;
+          .upload-tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.88);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 20;
+            &::after {
+              content: '';
+              position: absolute;
+              top: 100%;
+              left: 50%;
+              transform: translateX(-50%);
+              border: 5px solid transparent;
+              border-top-color: rgba(30, 41, 59, 0.88);
+            }
+          }
+          &:hover .upload-tooltip {
+            display: block;
+          }
+        }
         .icon-button {
           color: #94a3b8;
           transition: all 0.2s ease;

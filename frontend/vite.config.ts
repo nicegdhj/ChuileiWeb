@@ -5,6 +5,7 @@ import uni from '@dcloudio/vite-plugin-uni'
 export default defineConfig(({ mode }) => {
   const viteEnv = loadEnv(mode, process.cwd())
   return {
+    base: mode === 'production' ? '/chuilei/chat/' : '/',
     resolve: {
       alias: {
         '@': `${path.resolve(__dirname, 'src')}`

@@ -11,6 +11,6 @@ COPY . .
 RUN pnpm run build
 
 FROM nginx:1.25-alpine
-COPY --from=builder /app/dist/build/h5 /usr/share/nginx/html
+COPY --from=builder /app/dist/build/h5 /usr/share/nginx/html/chuilei/chat
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

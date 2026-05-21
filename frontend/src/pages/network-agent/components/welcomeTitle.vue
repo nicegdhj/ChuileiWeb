@@ -8,7 +8,7 @@ import Agent from '@/components/svg/Agent.vue'
       <Agent class="w-16 h-16 mb-6" />
       <div class="text-wrap">
         <h1 class="title font-bold text-slate-800 gap-2">
-          你好！我是网络运维超级入口<span class="version bg-blue-100 text-blue-600 font-medium"
+          你好！我是网络垂类大模型<span class="version bg-blue-100 text-blue-600 font-medium"
             >V1.0</span
           >
         </h1>

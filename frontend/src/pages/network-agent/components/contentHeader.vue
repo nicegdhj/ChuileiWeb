@@ -37,7 +37,7 @@ const backPage = () => {
         <div class="mobile-icon bg-slate-100">
           <Agent class="agent-icon" />
         </div>
-        <span class="font-bold text-slate-800 text-lg">网络运维超级入口</span>
+        <span class="font-bold text-slate-800 text-lg">网络垂类大模型</span>
       </div>
       <div class="mobile-right shadow-sm">
         <Avatar />

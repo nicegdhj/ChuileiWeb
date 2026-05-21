@@ -241,6 +241,29 @@ export const useChatStore = defineStore('chat', () => {
     stopLoadingPolling() // 清除轮询，避免内存泄漏
   }
 
+  const deleteSession = async (sessionId: string) => {
+    try {
+      await request<Response<null>>({
+        url: `/sessions/${sessionId}`,
+        method: 'DELETE'
+      })
+    } catch (_e) {
+      // 乐观删除，忽略网络错误
+    }
+    sessionList.value = sessionList.value.filter(s => s.sessionId !== sessionId)
+    if (sessionStore.currentSessionId === sessionId) {
+      if (sessionList.value.length > 0) {
+        const next = sessionList.value[0]
+        sessionStore.changeSelectedSessionId(next.sessionId!)
+        cleanDialog()
+        getDialogList(next.sessionId)
+      } else {
+        sessionStore.changeSelectedSessionId(uuidv4())
+        cleanDialog()
+      }
+    }
+  }
+
   // 存储 loadingText 数组
   const loadingTexts = ref<
     {
@@ -912,6 +935,7 @@ export const useChatStore = defineStore('chat', () => {
     dataParams,
     sessionList,
     getSessionList,
+    deleteSession,
     getDialogList,
     inputValue,
     setInputValue,
