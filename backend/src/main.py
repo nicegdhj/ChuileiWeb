@@ -28,6 +28,8 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    from src.shared.exceptions import register_handlers
+    register_handlers(app)
 
     health = APIRouter(prefix="/api/v1", tags=["health"])
 
