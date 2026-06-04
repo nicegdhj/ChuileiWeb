@@ -3,7 +3,7 @@ import logging
 import time
 from typing import AsyncIterator
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session as OrmSession
 
@@ -35,30 +35,25 @@ def _derive_title(messages) -> str:
     return "新对话"
 
 
-@router.post("/stream")
-async def chat_stream(
-    data: UploadFile = File(..., description="JSON-encoded ChatRequest"),
-    file: list[UploadFile] | None = File(default=None),
-    settings: Settings = Depends(get_settings),
-    client_id: str = Depends(require_client_id),
-    db: OrmSession = Depends(get_db),
-):
-    try:
-        raw = await data.read()
-        req = ChatRequest(**json.loads(raw))
-    except (ValueError, TypeError) as e:
-        raise HTTPException(status_code=422, detail=f"invalid data: {e}")
-
+def _run_chat_stream(
+    req: ChatRequest,
+    client_id: str,
+    db: OrmSession,
+    settings: Settings,
+) -> StreamingResponse:
+    """核心流式逻辑：写入用户消息 → 调 LLM → SSE 输出 → 写入 assistant 消息。"""
     sess_service.upsert_session(db, client_id, req.sessionId, title=_derive_title(req.messages))
 
     last_user = next((m for m in reversed(req.messages) if m.role == "user"), None)
     if last_user is not None:
-        import json as _json
         content_val = last_user.content
         if isinstance(content_val, str):
             content_str = content_val
         else:
-            content_str = _json.dumps([p.dict() if hasattr(p, 'dict') else p for p in content_val], ensure_ascii=False)
+            content_str = json.dumps(
+                [p.dict() if hasattr(p, 'dict') else p for p in content_val],
+                ensure_ascii=False,
+            )
         sess_service.append_message(
             db, req.sessionId, req.messageId, "user",
             content_str, "markdown",
@@ -97,3 +92,20 @@ async def chat_stream(
                 logger.exception("persist assistant failed")
 
     return StreamingResponse(gen(), media_type="text/event-stream")
+
+
+@router.post("/stream")
+async def chat_stream(
+    req: ChatRequest,
+    settings: Settings = Depends(get_settings),
+    client_id: str = Depends(require_client_id),
+    db: OrmSession = Depends(get_db),
+):
+    """SSE 流式对话。
+
+    请求体：标准 JSON（ChatRequest）
+    响应：text/event-stream，每帧形如 `data: {"code":"00000","choices":[...]}`
+
+    带文件时：先 POST /files 上传，把返回的 file_id 放进 ChatRequest.file_ids。
+    """
+    return _run_chat_stream(req, client_id, db, settings)

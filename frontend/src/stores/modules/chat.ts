@@ -801,22 +801,16 @@ export const useChatStore = defineStore('chat', () => {
         chatRequest.file_ids = fileMetaList.map(f => f.file_id)
       }
 
-      // 统一使用 FormData 格式
-      const formData = new FormData()
-      const jsonBlob = new Blob([JSON.stringify(chatRequest)], {
-        type: 'application/json'
-      })
-      formData.append('data', jsonBlob)
-
-      // 注意：不手动设置 Content-Type，浏览器会自动设置 boundary
+      // 纯 JSON 请求体（文件已通过 /files 上传，这里只带 file_ids）
       const response = await fetch(
         `${import.meta.env.VITE_APP_BASE_API}/chat/stream`,
         {
           method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             'X-Client-Id': getClientId()
           },
-          body: formData
+          body: JSON.stringify(chatRequest)
         }
       )
 

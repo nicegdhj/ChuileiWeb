@@ -52,5 +52,5 @@ LOCAL_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "<本机IP>")
 echo ""
 echo "================================================"
 echo "  服务已启动！"
-echo "  访问地址：http://${LOCAL_IP}:${WEB_PORT:-8088}/chuilei/chat"
+echo "  访问地址：http://${LOCAL_IP}:${WEB_PORT:-8088}/chuilei/chatbox"
 echo "================================================"

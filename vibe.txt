@@ -1,0 +1,9 @@
+  操作流程
+
+  # 开发机（有公网）打包
+  bash pack.sh
+
+  # 拷贝 chatbox-bundle-*.tar.gz 到目标机后：                                                                        tar -xzf chatbox-bundle-*.tar.gz
+  cd chatbox-bundle-*
+  cp .env.template .env                                                                                              vi .env               # 填内网 LLM 地址
+  bash deploy.sh        # 自动 load 镜像 + 启动

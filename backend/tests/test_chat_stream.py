@@ -33,7 +33,7 @@ def test_chat_stream_basic(monkeypatch, tmp_path):
             with client.stream(
                 "POST",
                 "/api/v1/chat/stream",
-                files={"data": ("data.json", json.dumps(payload), "application/json")},
+                json=payload,
                 headers={"X-Client-Id": "test-client"},
             ) as resp:
                 assert resp.status_code == 200
@@ -74,7 +74,7 @@ def test_chat_stream_persists_messages(monkeypatch, tmp_path):
             }
             with client.stream(
                 "POST", "/api/v1/chat/stream",
-                files={"data": ("data.json", json.dumps(payload), "application/json")},
+                json=payload,
                 headers={"X-Client-Id": "cidX"},
             ) as resp:
                 list(resp.iter_lines())
@@ -132,7 +132,7 @@ def test_chat_stream_injects_file_text(monkeypatch, tmp_path):
             }
             with client.stream(
                 "POST", "/api/v1/chat/stream",
-                files={"data": ("data.json", json.dumps(payload), "application/json")},
+                json=payload,
                 headers={"X-Client-Id": "cidF"},
             ) as resp:
                 list(resp.iter_lines())

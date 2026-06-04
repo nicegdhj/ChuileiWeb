@@ -29,6 +29,14 @@ data/uploads/*
 !data/db/.gitkeep
 !data/uploads/.gitkeep
 
+# SQLite scratch / WAL files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Offline deployment bundle
+chatbox-bundle-*.tar.gz
+
 # Logs
 *.log
 logs/
