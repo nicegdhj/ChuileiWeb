@@ -32,3 +32,6 @@ class ChatRequest(BaseModel):
     think: bool = False
     stream: bool = True
     file_ids: list[str] = Field(default_factory=list)
+    tool_id: str | None = None
+    ai_ref_id: str | None = None
+    module_type: str | None = None

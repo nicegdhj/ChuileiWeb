@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     db_url: str = "sqlite:///./data/db/chatbox.sqlite"
     upload_dir: str = "./data/uploads"
+    xinling_api_base_url: str = "https://188.107.159.161:19980/test/stream-api/view"
 
     log_level: str = "INFO"
     cors_origins: list[str] = Field(default_factory=lambda: ["*"])

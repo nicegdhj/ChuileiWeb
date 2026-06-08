@@ -30,13 +30,17 @@ class LLMClient:
             timeout=httpx.Timeout(timeout, connect=10),
         )
 
-    async def stream(self, messages: list[dict]) -> AsyncIterator[str]:
+    async def stream(self, messages: list[dict], think: bool = False) -> AsyncIterator[str]:
         payload = {
             "model": self._model,
             "stream": True,
             "max_tokens": self._max_tokens,
             "messages": messages,
         }
+        if think:
+            payload["think"] = True
+
+        start_think = False
         async with self._client.stream("POST", "/chat/completions", json=payload) as resp:
             if resp.status_code >= 400:
                 detail = await resp.aread()
@@ -58,9 +62,24 @@ class LLMClient:
                 if not choices:
                     continue
                 delta = choices[0].get("delta") or {}
-                content = delta.get("content")
-                if content:
-                    yield content
+
+                content = delta.get("content", "")
+                reasoning = delta.get("reasoning_content") or delta.get("reasoning") or ""
+
+                if think:
+                    if reasoning:
+                        if not start_think:
+                            yield "<think>"
+                            start_think = True
+                        yield reasoning
+                    if content:
+                        if start_think:
+                            yield "</think>"
+                            start_think = False
+                        yield content
+                else:
+                    if content:
+                        yield content
 
     async def aclose(self) -> None:
         await self._client.aclose()

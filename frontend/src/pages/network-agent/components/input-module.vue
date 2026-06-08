@@ -425,7 +425,7 @@ const selectedFiles = ref<any[]>([])
 
 const MAX_FILE_COUNT = 5
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const ALLOWED_EXTENSIONS = ['.txt', '.md', '.csv', '.log', '.pdf', '.docx', '.xlsx']
+const ALLOWED_EXTENSIONS = ['.txt', '.md', '.csv', '.log', '.pdf', '.docx', '.xlsx', '.pcap', '.pcapng']
 
 /** 点击添加按钮，弹出选择菜单 */
 const handleAddClick = () => {
@@ -1101,7 +1101,7 @@ const sendAudioDataToServer = (audioData: ArrayBuffer) => {
               <button class="icon-button" @click="chooseFile">
                 <Link class="icon" />
               </button>
-              <span class="upload-tooltip">支持 PDF、Word、Excel、TXT、MD、CSV 格式</span>
+              <span class="upload-tooltip">支持 PDF、Word、Excel、TXT、MD、CSV、信令pcap 格式</span>
             </div>
             <div class="dividing-line"></div>
             <button

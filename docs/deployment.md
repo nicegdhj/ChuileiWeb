@@ -25,7 +25,7 @@ docker compose up -d --build
 | `LLM_API_KEY` | 空 | 若上游需要鉴权则填写 |
 | `LLM_MAX_TOKENS` | `32000` | 最大 token 数 |
 | `LLM_TIMEOUT_SECONDS` | `120` | 上游超时（秒） |
-| `WEB_PORT` | `8080` | Host 暴露端口 |
+| `WEB_PORT` | `8088` | Host 暴露端口 |
 | `DB_URL` | `sqlite:///./data/db/chatbox.sqlite` | SQLite 路径 |
 | `UPLOAD_DIR` | `./data/uploads` | 文件上传目录 |
 
@@ -33,8 +33,8 @@ docker compose up -d --build
 
 ```yaml
 volumes:
-  - ./data/db:/app/data/db
-  - ./data/uploads:/app/data/uploads
+  - ./data/db:/data/db
+  - ./data/uploads:/data/uploads
 ```
 
 数据卷挂载到宿主机 `./data/`，重建容器不丢失。

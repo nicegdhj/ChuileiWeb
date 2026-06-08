@@ -11,11 +11,11 @@
 
 ```bash
 cp .env.example .env
-# 编辑 .env，按需修改 LLM_BASE_URL、LLM_MODEL
+# 编辑 .env，按需修改 LLM_BASE_URL、LLM_MODEL、LLM_API_KEY 等配置
 docker compose up -d --build
 ```
 
-浏览器访问 http://localhost:8080
+浏览器访问 http://localhost:8088 (或 .env 中指定的 WEB_PORT)
 
 ## 目录
 

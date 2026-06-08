@@ -68,7 +68,7 @@ export const useChatStore = defineStore('chat', () => {
     currentMessageId.value = item
   }
 
-  const isDeepThink = ref(false)
+  const isDeepThink = ref(true)
   const setIsDeepThink = () => {
     isDeepThink.value = !isDeepThink.value
   }
